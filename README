@@ -1,0 +1,76 @@
+README
+
+Ksgen - A Ruby/Sinatra program to generate Kickstart files based on the given
+URL from HAML templates.
+
+
+START
+
+  Start in the foreground
+
+	ruby ksgen.rb
+
+  or the background, a simple way to "daemonize" it
+
+	nohup ruby ksgen.rb &> ksgen.log &
+
+  Other methods such as init scripts or Unicorn can also be used.
+
+
+
+USAGE
+
+  Navigate to a URL valid for your setup, they can be simple if defaults are used
+
+	http://localhost:4567/centos/5/raid0
+
+  or a little more complex when needed
+
+	http://localhost:4567/centos5/singlepart?snippet=swapfile&arch=x86_64&datacenter=office
+
+
+
+URL STRUCTURE
+
+	OS Profile / Disk Profile ? Optional Parameters
+
+
+  Available Query Parameters
+
+  CPU Architecture = arch
+  Location = location
+  Snippets = snippet
+
+
+
+OS PROFILES
+
+  An OS profile provides the layout of the generated Kickstart file and should mostly contain variables that expand
+  into snippet names.
+
+
+
+DISK PROFILES
+
+  A disk profile is simply a snippet containing the disk partitioning portion of Kickstart profiles, the part typically
+  written to /tmp/partinfo.
+
+The disk profile must be specified in the OS profile as shown here to function
+as a variable with a value from the URL
+
+	<%= erb :"#{@disk_profile}" %>
+
+
+
+TEMPLATES
+
+  Templates define the layout of smaller snippets of ERB.
+
+
+
+SNIPPETS
+
+  Snippets are written in ERB, so for simple snippets that do not require
+  interpolation of Ruby code it is simply plain text.
+
+

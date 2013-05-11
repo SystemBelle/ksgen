@@ -35,12 +35,17 @@ get '/:profile/:storage/?' do
 	# optional query parameters static?  can't we make this more flexible?
 	@snippets = @query['snippet'] # return array, multiple snippet parameters allowed
 
-	# Use defaults if value not given
+	# Use defaults if value not given - needs to be DRY'd or put into subroutine
 	@arch = @query['arch'][0]
 	@arch.nil? && @arch = settings.arch
+	@hostname = @query['hostname'][0]
+	@hostname.nil? && @hostname = settings.hostname
 	@filesystem = @query['filesystem'][0]
 	@filesystem.nil? && @filesystem = settings.filesystem
+	@version = @query['version'][0]
+	@version.nil? && @version = settings.version
 
-	erb :"#{@profile}" #, :locals => { :filesystem => "#{@filesystem}", :arch => "#{@arch}" }
+
+	erb :"#{@profile}"
 end
 

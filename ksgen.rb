@@ -1,11 +1,13 @@
 require 'sinatra'
 require 'cgi'
+require './conf.rb'
 
 # Ksgen - A Ruby/Sinatra program to generate Kickstart files or Arch Linux
 # install scripts based on the given URL from ERB templates
+# can change disk profile and cpu arch via url, others need separate profiles
 
 set :environment, :development
-set :views, [ 'snippets', 'templates' ]
+set :views, [ 'snippets', 'profiles' ]
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -16,28 +18,29 @@ helpers do
 	end
 end
 
-get '/:distro/:version/:disk_profile/?' do
+get '/:profile/:storage/?' do
 	content_type 'text/plain'
 
+	# Defaults
+	@arch = settings.arch
+	@filesystem = settings.filesystem
+
 	# parameters
-	@distro = params['distro']
-	@version = params['version']
-	@disk_profile = params[:disk_profile]
+	@profile = params['profile']
+	@storage = params['storage']
 
 	# get query params from url
 	@query = CGI.parse(request.query_string)
 
-	# optional query parameters
+	# optional query parameters static?  can't we make this more flexible?
 	@snippets = @query['snippet'] # return array, multiple snippet parameters allowed
-	@arch_ = @query['arch'][0]
-	@datacenter = @query['datacenter'][0]
 
-	# defaults
-	@arch ||= 'x86_64'
-	@datacenter ||= "#{Default_datacenter}"
+	# Use defaults if value not given
+	@arch = @query['arch'][0]
+	@arch.nil? && @arch = settings.arch
+	@filesystem = @query['filesystem'][0]
+	@filesystem.nil? && @filesystem = settings.filesystem
 
-	# Render file
-	@template = @distro + '-' + @version
-	erb :"#{@template}"
+	erb :"#{@profile}" #, :locals => { :filesystem => "#{@filesystem}", :arch => "#{@arch}" }
 end
 

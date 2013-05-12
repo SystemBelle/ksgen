@@ -43,7 +43,9 @@ get '/:profile/:storage/?' do
 	@filesystem = @query['filesystem'][0]
 	@filesystem.nil? && @filesystem = settings.filesystem
 	@version = @query['version'][0]
-	@version.nil? && @version = settings.version
+	@version.nil? && @version = '0'
+	@location = @query['location'][0]
+	@location.nil? && @location = 'unspecified'
 
 
 	erb :"#{@profile}"
